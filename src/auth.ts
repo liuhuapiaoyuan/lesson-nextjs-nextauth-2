@@ -1,8 +1,11 @@
 import NextAuth from "next-auth";
+import { Provider } from "next-auth/providers";
 import credentials from "next-auth/providers/credentials";
+import GitHub from "next-auth/providers/github";
 import { AuthConfig } from "./auth.config";
 
-const providers = [
+const providers :Provider[]= [
+  GitHub,
   credentials({
     credentials: {
       username: {},
@@ -10,12 +13,12 @@ const providers = [
     },
     async authorize(credentials) {
       if (
-        credentials.username &&
+        typeof credentials.username==='string' &&
         credentials.username.length > 0 &&
         credentials.password == "123456qq"
       ) {
         return {
-          id: 1,
+          id: "1",
           username: credentials.username,
           nickname: credentials.username,
         };
@@ -24,20 +27,17 @@ const providers = [
     },
   }),
 ];
-
-/**
- *  登录列表
- */
+ 
 export const providerList = providers
   .map((provider) => {
     if (typeof provider === "function") {
-      const providerData = provider();
-      return { id: providerData.id, name: providerData.name };
+      const providerData = provider()
+      return { id: providerData.id, name: providerData.name }
     } else {
-      return { id: provider.id, name: provider.name };
+      return { id: provider.id, name: provider.name }
     }
   })
-  .filter((provider) => provider.id !== "credentials");
+  .filter((provider) => provider.id !== "credentials")
 
 export const { signIn, signOut, auth, handlers } = NextAuth({
   ...AuthConfig,
