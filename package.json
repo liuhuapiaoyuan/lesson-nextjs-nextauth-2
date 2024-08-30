@@ -1,5 +1,5 @@
 {
-  "name": "lesson-nextjs-nextauth",
+  "name": "nextjs-nextauth-misscsrf",
   "version": "0.1.0",
   "private": true,
   "scripts": {

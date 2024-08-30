@@ -27,16 +27,6 @@ export default async function Home() {
           <>
             <div>userId：{session?.user?.id}</div>
             <div>昵称：{session?.user?.username}</div>
-            <div className="flex gap-1 items-start">
-              <div>头像：</div>
-              <img
-                src={session?.user?.image}
-                alt="头像"
-                width={50}
-                height={50}
-                className="rounded-full"
-              />
-            </div>
             <code>{JSON.stringify(session.user, null, 2)}</code>
           </>
         )}

@@ -60,6 +60,7 @@ export default async function SignInPage() {
         </form>
         {Object.values(providerList).map((provider) => (
           <form
+            key={provider.name}
             action={async () => {
               "use server";
               try {
