@@ -14,7 +14,6 @@ export default async function SignInPage() {
             "use server";
             try {
               await signIn("credentials", formData);
-              await redirect("/");
             } catch (error) {
               if (error instanceof AuthError) {
                 return redirect(
