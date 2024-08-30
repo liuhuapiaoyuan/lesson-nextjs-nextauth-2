@@ -81,7 +81,10 @@ export default async function SignInPage() {
               }
             }}
           >
-            <button type="submit">
+            <button
+              type="submit"
+              className="bg-[#0b051d] w-max m-auto px-6 py-2 rounded text-white text-sm font-normal"
+            >
               <span>{provider.name}登录</span>
             </button>
           </form>
