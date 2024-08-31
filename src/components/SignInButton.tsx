@@ -1,11 +1,11 @@
-import { signIn } from "@/auth";
+import { redirect, RedirectType } from "next/navigation";
 
 export function SignInButton() {
   return (
     <form
       action={async () => {
         "use server";
-        await signIn();
+        await redirect("/signin?callbackUrl=/", RedirectType.push);
       }}
     >
       <button

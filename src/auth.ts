@@ -12,6 +12,7 @@ const providers :Provider[]= [
       password: {},
     },
     async authorize(credentials) {
+      console.log("authorize credentials", credentials);
       if (
         typeof credentials.username==='string' &&
         credentials.username.length > 0 &&

@@ -13,7 +13,12 @@ export default async function SignInPage() {
           action={async (formData) => {
             "use server";
             try {
-              await signIn("credentials", formData);
+              await signIn("credentials", {
+                username: formData.get("username"),
+                password: formData.get("password"),
+                redirect: true,
+                redirectTo: "/",
+              });
             } catch (error) {
               if (error instanceof AuthError) {
                 return redirect(
