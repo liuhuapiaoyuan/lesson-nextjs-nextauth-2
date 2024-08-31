@@ -12,7 +12,6 @@ const providers :Provider[]= [
       password: {},
     },
     async authorize(credentials) {
-      console.log("authorize credentials", credentials);
       if (
         typeof credentials.username==='string' &&
         credentials.username.length > 0 &&
@@ -21,7 +20,7 @@ const providers :Provider[]= [
         return {
           id: "1",
           username: credentials.username,
-          nickname: credentials.username,
+          name: credentials.username,
         };
       }
       return null;

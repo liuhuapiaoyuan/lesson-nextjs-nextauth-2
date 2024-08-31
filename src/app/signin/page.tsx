@@ -4,7 +4,11 @@ import { redirect } from "next/navigation";
 
 const SIGNIN_ERROR_URL = "/error";
 
-export default async function SignInPage() {
+export default async function SignInPage({
+  searchParams,
+}: {
+  searchParams: Record<string, string>;
+}) {
   return (
     <div className="flex items-center justify-center h-screen w-full">
       <div className="flex flex-col gap-2 p-5 w-[400px]  rounded-md  border shadow-md">
@@ -17,7 +21,7 @@ export default async function SignInPage() {
                 username: formData.get("username"),
                 password: formData.get("password"),
                 redirect: true,
-                redirectTo: "/",
+                redirectTo: searchParams["callbackUrl"],
               });
             } catch (error) {
               if (error instanceof AuthError) {
@@ -57,43 +61,45 @@ export default async function SignInPage() {
           <div>
             <button
               type="submit"
-              className="bg-[#7747ff] w-max m-auto px-6 py-2 rounded text-white text-sm font-normal"
+              className="bg-[#7747ff] w-max m-auto px-6 py-2 rounded text-white "
             >
               登录
             </button>
           </div>
         </form>
-        {Object.values(providerList).map((provider) => (
-          <form
-            key={provider.name}
-            action={async () => {
-              "use server";
-              try {
-                await signIn(provider.id);
-              } catch (error) {
-                // Signin can fail for a number of reasons, such as the user
-                // not existing, or the user not having the correct role.
-                // In some cases, you may want to redirect to a custom error
-                if (error instanceof AuthError) {
-                  return redirect(`${SIGNIN_ERROR_URL}?error=${error.type}`);
-                }
+        <div className="flex flex-col gap-2 p-2">
+          {Object.values(providerList).map((provider) => (
+            <form
+              key={provider.name}
+              action={async () => {
+                "use server";
+                try {
+                  await signIn(provider.id);
+                } catch (error) {
+                  // Signin can fail for a number of reasons, such as the user
+                  // not existing, or the user not having the correct role.
+                  // In some cases, you may want to redirect to a custom error
+                  if (error instanceof AuthError) {
+                    return redirect(`${SIGNIN_ERROR_URL}?error=${error.type}`);
+                  }
 
-                // Otherwise if a redirects happens Next.js can handle it
-                // so you can just re-thrown the error and let Next.js handle it.
-                // Docs:
-                // https://nextjs.org/docs/app/api-reference/functions/redirect#server-component
-                throw error;
-              }
-            }}
-          >
-            <button
-              type="submit"
-              className="bg-[#0b051d] w-max m-auto px-6 py-2 rounded text-white text-sm font-normal"
+                  // Otherwise if a redirects happens Next.js can handle it
+                  // so you can just re-thrown the error and let Next.js handle it.
+                  // Docs:
+                  // https://nextjs.org/docs/app/api-reference/functions/redirect#server-component
+                  throw error;
+                }
+              }}
             >
-              <span>{provider.name}登录</span>
-            </button>
-          </form>
-        ))}
+              <button
+                type="submit"
+                className="bg-[#321a7a] w-full m-auto px-6 py-2 rounded-xl text-white hover:bg-[#0c0620]"
+              >
+                <span>{provider.name}登录</span>
+              </button>
+            </form>
+          ))}
+        </div>
       </div>
     </div>
   );

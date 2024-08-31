@@ -17,7 +17,6 @@ const AuthConfig: NextAuthConfig = {
   pages: {
     signIn: "/signin",
   },
-  /* skipCSRFCheck:skipCSRFCheck, */
   callbacks: {
     async jwt({ token, user }) {
       if (user) {

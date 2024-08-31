@@ -20,6 +20,8 @@ export default async function ProtectedPage() {
           height={38}
           priority
         />
+        <div>账号：{user.id}</div>
+        <div>昵称：{user.name}</div>
         <div>此处演示，必须登录才可以使用的页面</div>
         <div>如果没有登录直接访问，则会被跳转到登录页面</div>
       </main>
