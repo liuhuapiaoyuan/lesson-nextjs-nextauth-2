@@ -21,6 +21,7 @@ const providers :Provider[]= [
           id: "1",
           username: credentials.username,
           name: credentials.username,
+          isNewUser:true
         };
       }
       return null;

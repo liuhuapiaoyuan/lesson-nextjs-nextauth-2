@@ -16,9 +16,11 @@ const AuthConfig: NextAuthConfig = {
   providers:[], 
   pages: {
     signIn: "/signin",
+    newUser: "/signup",
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user,trigger }) {
+      console.log("jwt callback triggered", trigger);
       if (user) {
         token.username = user.username; 
       }
@@ -28,10 +30,9 @@ const AuthConfig: NextAuthConfig = {
       if (token?.sub) {
         session.user.id = token.sub;
       }
-      session.user.username = token.username as string
-
+      session.user.username = token.username as string 
       return session;
-    },
+    } 
   },
 };
 export { AuthConfig };
