@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 export function SignInButton() {
   return (
     <form
-      method="POST"
       action={async () => {
         "use server";
         await redirect("/signin");
