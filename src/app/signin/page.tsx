@@ -1,6 +1,8 @@
 import { providerList, signIn } from "@/auth";
 import { AuthError } from "next-auth";
+import Image from "next/image";
 import { redirect } from "next/navigation";
+import { Input } from "./Input";
 
 const SIGNIN_ERROR_URL = "/error";
 
@@ -11,18 +13,13 @@ export default async function SignInPage({
 }) {
   return (
     <div className="flex items-center justify-center h-screen w-full">
-      <div className="flex flex-col gap-2 p-5 w-[400px]  rounded-md  border shadow-md">
+      <div className="flex flex-col gap-2 p-5 w-[400px]  rounded-lg  border shadow-md">
         <form
           className="flex flex-col gap-2 p-2 "
           action={async (formData) => {
             "use server";
             try {
-              await signIn("credentials", {
-                username: formData.get("username"),
-                password: formData.get("password"),
-                redirect: true,
-                redirectTo: searchParams["callbackUrl"],
-              });
+              await signIn("credentials", formData);
             } catch (error) {
               if (error instanceof AuthError) {
                 return redirect(
@@ -35,40 +32,39 @@ export default async function SignInPage({
             }
           }}
         >
-          <label
-            htmlFor="username"
-            className="block text-gray-600 cursor-text text-sm leading-[140%] font-normal mb-2"
-          >
-            账户
-            <input
-              name="username"
-              id="username"
-              placeholder="邮箱/账号/手机"
-              className="rounded border border-gray-200 text-sm w-full font-normal leading-[18px] text-black tracking-[0px] appearance-none block h-11 m-0 p-[11px] focus:ring-2 ring-offset-2  ring-gray-900 outline-0"
+          <input
+            type="hidden"
+            name="redirectTo"
+            value={searchParams["callbackUrl"]}
+          />
+          <div className="flex items-center justify-center ">
+            <Image
+              className="dark:invert "
+              src="/logo.png"
+              alt="Next.js Boy"
+              width={180}
+              height={38}
+              priority
             />
-          </label>
-          <label
-            htmlFor="password"
-            className="block text-gray-600 cursor-text text-sm leading-[140%] font-normal mb-2"
-          >
-            密码
-            <input
-              name="password"
-              id="password"
-              className="rounded border border-gray-200 text-sm w-full font-normal leading-[18px] text-black tracking-[0px] appearance-none block h-11 m-0 p-[11px] focus:ring-2 ring-offset-2  ring-gray-900 outline-0"
-            />
-          </label>
+          </div>
+          <Input label="用户名" name="username" placeholder="请输入用户名" />
+          <Input
+            label="密码"
+            name="password"
+            placeholder="请输入密码"
+            type="password"
+          />
           <div>
             <button
               type="submit"
-              className="bg-[#7747ff] w-max m-auto px-6 py-2 rounded text-white "
+              className="bg-[#272e3f] hover:bg-opacity-80 w-full px-6 py-2 rounded text-white "
             >
               登录
             </button>
           </div>
         </form>
         <div className="flex flex-col gap-2 p-2">
-          {Object.values(providerList).map((provider) => (
+          {providerList.map((provider) => (
             <form
               key={provider.name}
               action={async () => {
@@ -78,15 +74,13 @@ export default async function SignInPage({
                     redirectTo: searchParams["callbackUrl"],
                   });
                 } catch (error) {
-                  // Signin can fail for a number of reasons, such as the user
-                  // not existing, or the user not having the correct role.
-                  // In some cases, you may want to redirect to a custom error
+                  // 登录可能会因为多种原因失败，例如用户不存在，或者用户没有正确的角色。
+                  // 在某些情况下，你可能希望重定向到一个自定义错误页面。
                   if (error instanceof AuthError) {
                     return redirect(`${SIGNIN_ERROR_URL}?error=${error.type}`);
                   }
-
-                  // Otherwise if a redirects happens Next.js can handle it
-                  // so you can just re-thrown the error and let Next.js handle it.
+                  // 否则，如果发生重定向，Next.js 可以处理它
+                  // 所以你可以重新抛出错误，让 Next.js 处理它。
                   // Docs:
                   // https://nextjs.org/docs/app/api-reference/functions/redirect#server-component
                   throw error;
@@ -95,7 +89,7 @@ export default async function SignInPage({
             >
               <button
                 type="submit"
-                className="bg-[#321a7a] w-full m-auto px-6 py-2 rounded-xl text-white hover:bg-[#0c0620]"
+                className="bg-[#f4f7fa] w-full m-auto px-6 py-2 rounded text-foreground hover:text-background hover:bg-[#0c0620]"
               >
                 <span>{provider.name}登录</span>
               </button>
