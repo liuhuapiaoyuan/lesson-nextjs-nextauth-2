@@ -4,8 +4,6 @@ import Image from "next/image";
 import { redirect } from "next/navigation";
 import { Input } from "./Input";
 
-const SIGNIN_ERROR_URL = "/error";
-
 export default async function SignInPage({
   searchParams,
 }: {
@@ -22,11 +20,12 @@ export default async function SignInPage({
               await signIn("credentials", formData);
             } catch (error) {
               if (error instanceof AuthError) {
-                return redirect(
-                  `${SIGNIN_ERROR_URL}?error=${
-                    error.type
-                  }&message=${encodeURIComponent(error.message)}`
-                );
+                const params = new URLSearchParams();
+                params.append("error", error.type);
+                params.append("message", encodeURIComponent(error.message));
+                searchParams["callbackUrl"] &&
+                  params.append("callbackUrl", searchParams["callbackUrl"]);
+                return redirect(`/signin?${params.toString()}`);
               }
               throw error;
             }
@@ -54,6 +53,12 @@ export default async function SignInPage({
             placeholder="请输入密码"
             type="password"
           />
+          {searchParams["error"] && (
+            <div className="p-2 text-red-500 text-xs">
+              {searchParams["error"]}:
+              {decodeURIComponent(searchParams["message"])}
+            </div>
+          )}
           <div>
             <button
               type="submit"
@@ -77,7 +82,12 @@ export default async function SignInPage({
                   // 登录可能会因为多种原因失败，例如用户不存在，或者用户没有正确的角色。
                   // 在某些情况下，你可能希望重定向到一个自定义错误页面。
                   if (error instanceof AuthError) {
-                    return redirect(`${SIGNIN_ERROR_URL}?error=${error.type}`);
+                    const params = new URLSearchParams();
+                    params.append("error", error.type);
+                    params.append("message", encodeURIComponent(error.message));
+                    searchParams["callbackUrl"] &&
+                      params.append("callbackUrl", searchParams["callbackUrl"]);
+                    return redirect(`/signin?${params.toString()}`);
                   }
                   // 否则，如果发生重定向，Next.js 可以处理它
                   // 所以你可以重新抛出错误，让 Next.js 处理它。
