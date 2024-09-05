@@ -26,9 +26,21 @@ export default async function Home() {
         <div>当前账号信息 ：{session?.user?.id ?? "未登录"}</div>
         {session?.user && (
           <>
-            <div>userId：{session?.user?.id}</div>
-            <div>昵称：{session?.user?.username}</div>
-            <code>{JSON.stringify(session.user, null, 2)}</code>
+            {session.user.image && (
+              <Image
+                className="dark:invert"
+                src={session.user.image}
+                alt="Next.js Boy"
+                width={180}
+                height={38}
+                priority
+              />
+            )}
+            <div>userId/email：{session?.user?.email}</div>
+            <div>昵称：{session?.user?.name}</div>
+            <code className="text-xs p-2 bg-gray-100 rounded-md shadow">
+              {JSON.stringify(session.user, null, 2)}
+            </code>
           </>
         )}
         <div className="flex gap-4">
