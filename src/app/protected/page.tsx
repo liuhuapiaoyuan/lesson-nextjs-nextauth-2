@@ -1,4 +1,5 @@
 import { auth, signIn } from "@/auth";
+import { prisma } from "@/prisma";
 import Image from "next/image";
 
 export default async function ProtectedPage() {
@@ -8,6 +9,11 @@ export default async function ProtectedPage() {
   if (!user) {
     return signIn();
   }
+  const accounts = await prisma.account.findMany({
+    where: {
+      userId: user.id,
+    },
+  });
 
   return (
     <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
@@ -32,6 +38,15 @@ export default async function ProtectedPage() {
         )}
         <div>账号：{user.id}</div>
         <div>昵称：{user.name}</div>
+        <div>绑定信息列表:</div>
+
+        {accounts.map((account) => (
+          <div key={account.id} className="shadow p-2 hover:bg-gray-100">
+            <div>类型：{account.type}</div>
+            <div>服务商：{account.provider}</div>
+            <div>账号：{account.access_token}</div>
+          </div>
+        ))}
         <div>此处演示，必须登录才可以使用的页面</div>
         <div>如果没有登录直接访问，则会被跳转到登录页面</div>
       </main>

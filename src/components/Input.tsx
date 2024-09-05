@@ -3,10 +3,12 @@ export interface InputProps {
   name: string;
   placeholder: string;
   type?: string;
+  defaultValue?: string;
 }
 export const Input: React.FC<InputProps> = ({
   label,
   name,
+  defaultValue,
   placeholder,
   type = "text",
 }) => {
@@ -17,6 +19,7 @@ export const Input: React.FC<InputProps> = ({
     >
       <span>{label}</span>
       <input
+        defaultValue={defaultValue}
         type={type}
         name={name}
         id={name}

@@ -1,33 +1,33 @@
-import { providerList, signIn } from "@/auth";
-import { AuthError } from "next-auth";
+import { providerList, register } from "@/auth";
 import Image from "next/image";
-import { permanentRedirect } from "next/navigation";
-import { Input } from "./Input";
-import { OauthButton } from "./OauthButton";
+import { redirect, RedirectType } from "next/navigation";
+import { Input } from "../../../components/Input";
+import { OauthButton } from "../../../components/OauthButton";
+
 async function action(formData: FormData) {
   "use server";
   try {
-    await signIn("credentials", formData);
+    await register(formData);
+    // 注册成功就去登录
+    await redirect("/signin", RedirectType.replace);
   } catch (error) {
-    if (error instanceof AuthError) {
-      const params = new URLSearchParams();
-      params.append("error", error.type);
-      params.append("message", encodeURIComponent(error.message));
-      formData.has("redirectTo") &&
-        params.append("callbackUrl", formData.get("redirectTo") as string);
-      return permanentRedirect(`/signin?${params.toString()}`);
-    }
     throw error;
   }
 }
-export default async function SignInPage({
+
+/**
+ * 账号注册
+ * @param param0
+ * @returns
+ */
+export default async function SignupPage({
   searchParams,
 }: {
   searchParams: Record<string, string>;
 }) {
   return (
     <div className="flex items-center justify-center h-screen w-full">
-      <div className="flex flex-col gap-2 p-5 w-[400px]  rounded-lg  border shadow-md">
+      <div className="flex flex-col gap-2 p-5 w-[600px]  rounded-lg  border shadow-md">
         <form className="flex flex-col gap-2 p-2 " action={action}>
           <input
             type="hidden"
@@ -51,6 +51,12 @@ export default async function SignInPage({
             placeholder="请输入密码"
             type="password"
           />
+          <Input
+            label="确认密码"
+            name="confirmPassword"
+            placeholder="请再次输入密码"
+            type="password"
+          />
           {searchParams["error"] && (
             <div className="p-2 text-red-500 text-xs">
               {searchParams["error"]}:
@@ -62,7 +68,7 @@ export default async function SignInPage({
               type="submit"
               className="bg-[#272e3f] hover:bg-opacity-80 w-full px-6 py-2 rounded text-white "
             >
-              登录
+              注册账号
             </button>
           </div>
         </form>
@@ -76,6 +82,12 @@ export default async function SignInPage({
             />
           ))}
         </div>
+        <a
+          href="/signin"
+          className="hover:text-brand underline  text-center text-sm underline-offset-4"
+        >
+          已经有账号? 点击登录
+        </a>
       </div>
     </div>
   );
