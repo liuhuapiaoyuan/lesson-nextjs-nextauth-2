@@ -1,9 +1,12 @@
 import { providerList, signIn } from "@/auth";
+import { Input } from "@/components/Input";
+import { OauthButton } from "@/components/OauthButton";
 import { AuthError } from "next-auth";
 import Image from "next/image";
 import { permanentRedirect } from "next/navigation";
-import { Input } from "./Input";
-import { OauthButton } from "./OauthButton";
+
+
+
 async function action(formData: FormData) {
   "use server";
   try {
@@ -20,6 +23,9 @@ async function action(formData: FormData) {
     throw error;
   }
 }
+
+
+
 export default async function SignInPage({
   searchParams,
 }: {
@@ -76,6 +82,12 @@ export default async function SignInPage({
             />
           ))}
         </div>
+        <a
+          href="/signup"
+          className="hover:text-brand underline  text-center text-sm underline-offset-4"
+        >
+          没有账号? 点击注册
+        </a>
       </div>
     </div>
   );

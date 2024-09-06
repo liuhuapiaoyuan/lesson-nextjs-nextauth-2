@@ -1,11 +1,10 @@
+import crypto from "crypto";
 import NextAuth from "next-auth";
 import { Provider } from "next-auth/providers";
 import credentials from "next-auth/providers/credentials";
-import GitHub from "next-auth/providers/github";
 import { AuthConfig } from "./auth.config";
-
-const providers :Provider[]= [
-  GitHub,
+import { prisma } from "./prisma";
+const providers: Provider[] = [
   credentials({
     credentials: {
       username: {},
@@ -13,16 +12,27 @@ const providers :Provider[]= [
     },
     async authorize(credentials) {
       if (
-        typeof credentials.username==='string' &&
+        typeof credentials.username === 'string' &&
         credentials.username.length > 0 &&
-        credentials.password == "123456qq"
+        typeof credentials.password === 'string' &&
+        credentials.password.length > 0
       ) {
-        return {
-          id: "1",
-          username: credentials.username,
-          name: credentials.username,
-          image:"/logo.png"
-        };
+        const user = await prisma.user.findUnique({
+          where: { username: credentials.username }
+        })
+
+        if (user && user.password === (crypto
+          .createHash("md5")
+          .update(credentials.password + user.salt)
+          .digest("hex"))) {
+          return {
+            id: user.id,
+            username: user.username!,
+            name: user.nickname,
+            image: user.image
+          }
+        }
+        return null;
       }
       return null;
     },
@@ -35,11 +45,11 @@ export const providerList = providers
     if (typeof provider === "function") {
       provider = provider()
     }
-    return { id: provider.id, name: provider.name  }
+    return { id: provider.id, name: provider.name }
   })
   .filter((provider) => provider.id !== "credentials")
 
-  
+
 export const { signIn, signOut, auth, handlers } = NextAuth({
   ...AuthConfig,
   providers,

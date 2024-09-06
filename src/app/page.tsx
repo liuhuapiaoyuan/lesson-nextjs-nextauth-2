@@ -23,21 +23,22 @@ export default async function Home() {
           height={38}
           priority
         />
-        <div>当前账号信息 ：{session?.user?.id ?? "未登录"}</div>
+        <div>当前账号信息 ：{session?.user?.name ?? "未登录"}</div>
         {session?.user && (
           <>
-            {session.user.image && (
-              <Image
-                className="dark:invert"
-                src={session.user.image}
-                alt="Next.js Boy"
-                width={180}
-                height={38}
-                priority
-              />
-            )}
-            <div>userId/email：{session?.user?.email}</div>
-            <div>昵称：{session?.user?.name}</div>
+            <div className="flex items-center justify-center gap-2">
+              {session.user.image && (
+                <Image
+                  className="dark:invert rounded-full shadow"
+                  src={session.user.image}
+                  alt="Next.js Boy"
+                  width={50}
+                  height={50}
+                  priority
+                />
+              )}
+              <div>昵称：{session?.user?.name}</div>
+            </div>
             <code className="text-xs p-2 bg-gray-100 rounded-md shadow">
               {JSON.stringify(session.user, null, 2)}
             </code>
