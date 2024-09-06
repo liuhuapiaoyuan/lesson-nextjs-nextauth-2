@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import { Provider } from "next-auth/providers";
 import credentials from "next-auth/providers/credentials";
 import GitHub from "next-auth/providers/github";
+import { AuthConfig } from "./auth.config";
 
 const providers :Provider[]= [
   GitHub,
@@ -40,11 +41,6 @@ export const providerList = providers
 
   
 export const { signIn, signOut, auth, handlers } = NextAuth({
-  session: {
-    strategy: "jwt",
-  },
+  ...AuthConfig,
   providers,
-  pages: {
-    signIn: "/signin",
-  },
 });

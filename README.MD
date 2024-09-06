@@ -1,122 +1,128 @@
 
-## 一起干翻next-auth@5.0系列(四): 快速自定义UI
+## 一起干翻next-auth@5.0系列(五): 集成数据库搞定注册/登录
 
-之前我们掌握并且实践了一些next-auth的基本操作，本文将介绍如何快速自定义UI，并使用next-auth@5.0系列的最新版本。为了保持课程的简洁，我们抛弃复杂性，去除数据库相关功能。
 
-### 1. 调整`auth.ts`配置
-在`auth.ts`文件中，我们需要配置`next-auth`以使用自定义的登录页面。增加以下配置项：
+## 前言 
+终于到完整集成前面课程的时刻了,我们来整理一下本次的需求:
 
+- [x] 集成数据库登录
+- [x] 自定义注册页面
+- [x] 完成账户注册逻辑
+
+## 前置知识
+- 一起干翻next-auth@5.0系列(三): 授权登录集成到数据库
+- prisma: 一个成熟的`NodejsOrm`工具
+- sqlite: 最简单的基于文件系统的数据库
+
+## 技术点分析
+- [x] 使用`prisma`来管理`sqlite`数据库
+- [x] 使用`ServerAction`来处理`账户注册逻辑`
+- [x] 使用`crypto`模块来实现`Salt`加盐技术,保障账户密码安全
+
+
+## 1. 引入`prisma`来快速集成数据库
+
+这边其实很简单,一步步按照我们的教程(三)来启动就可以了.
+本次我们简单的描述一下步骤:
+#### 1.1 安装依赖
+```
+pnpm add @prisma/client 
+pnpm add -D prisma
+```
+
+
+#### 1.2 创建环境变量`DATABASE_URL`
+为了简单,我们使用`sqlite`
+```
+DATABASE_URL="file:temp/dev.db"
+```
+
+#### 1.3 创建`prisma/schema.prisma`,并初始化数据库
+
+这边schema.prisma文件内容如下:
+```prisma
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+ 
+generator client {
+  provider = "prisma-client-js"
+}
+ 
+model User {
+  id            String          @id @default(cuid())
+  nickname          String?
+  username         String?         @unique
+  password         String?         
+  salt         String?         
+  image         String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+```
+> 为了保持简洁,我们的数据库设计非常简单,但是完善.接下来我们直接初始化
+
+```bash
+pnpm  prisma migrate dev
+```
+
+#### 1.4 配置`PrismaClient`
+创建文件`src/prisma.ts`
 ```typescript
-import NextAuth from 'next-auth';
+import { PrismaClient } from "@prisma/client"
+const globalForPrisma = globalThis as unknown as { prisma: PrismaClient }
+export const prisma = globalForPrisma.prisma || new PrismaClient()
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma
+```
 
-export const authOptions = {
-  pages: {
-    signIn: "/signin", // 自定义登录页面
+## 2. 改造`auth.ts`,让`prisma`适配到`NextAuth`
+
+由于`Nextjs/Middleware`不支持数据库连接,我们来拆分出`auth.config.ts`文件,让它只负责`NextAuth`的配置,而数据库的连接交给`auth.ts`来管理.
+
+![依赖关系如上](doc/auth.config.png)
+
+
+#### 2.1 创建 `src/auth.config.ts`
+```typescript
+import { NextAuthConfig } from "next-auth";
+
+export const AuthConfig:NextAuthConfig = {
+  session: {
+    strategy: "jwt",
   },
-  // 其他配置项...
+  providers: [],
+  pages: {
+    signIn: "/signin",
+  },
 };
-
-export default NextAuth(authOptions);
 ```
 
-这段代码将会告诉`next-auth`在需要用户登录时，跳转到我们定义的`/signin`页面。
+#### 2.2 修改 `src/auth.ts`
 
-### 2. 自定义登录页面
-
-![登录](doc/login.png)
-
-#### 2.1 改造登录入口
-
-我们为登录入口创建了一个按钮组件，它会将用户重定向到自定义登录页面。下面是代码示例：
-
-```typescript
-import { signIn } from "next-auth/react";
-
-export function SignInButton() {
-  return (
-    <button
-      className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-      onClick={() => signIn()}
-    >
-      登录系统
-    </button>
-  );
-}
-
-```
-
-在上述代码中，`next-auth/react`组件提供的`signIn`函数,该函数会判定状态后,将用户重定向到我们自定义的登录页面(`/signin`)。按钮样式使用了Tailwind CSS，你可以根据自己的需求进行调整。
-
-> `import { signIn } from "next-auth/react";` 这是`next-auth/react`的导出客户端组件函数，可以帮助我们快速实现登录功能。所以在使用的时候一定要记得加上`"use client";`的标注.
-
-#### 2.2 自定义登录页面内容
-
-接下来，我们在`/pages/signin.tsx`中创建自定义的登录页面。页面可以包括输入框、提交按钮和一些简单的样式：
-
-```typescript
-import { providerList, signIn } from "@/auth";
-
-async function action(formData: FormData) {
-  "use server";
-  try {
-    await signIn("credentials", formData);
-  } catch (error) {
-    if (error instanceof AuthError) {
-      const params = new URLSearchParams();
-      params.append("error", error.type);
-      params.append("message", encodeURIComponent(error.message));
-      formData.has("redirectTo") &&
-        params.append("callbackUrl", formData.get("redirectTo") as string);
-      return permanentRedirect(`/signin?${params.toString()}`);
-    }
-    throw error;
-  }
-}
-export default function SignIn() { }
-```
-
-- 这个页面包含了邮箱和密码输入框，还有一个显示错误信息的区域。点击登录按钮时会执行`signIn`函数进行表单提交。
-- 这里我们实现一个`ServerAction`,封装好的`Next-Auth`提供了方便的集成方案,我们只需要调用`signIn`函数即可。
-- 我们还需要在`action`函数中使用`use server`标注，以告诉`next-auth`这个函数是服务端函数，并且需要在服务端进行处理。
-- 我们还需要在`action`函数中捕获`AuthError`异常，并将错误信息传递给前端，以显示在页面上。
+现在 `auth.ts` 只提供`Adapter`的配置,其他配置从`auth.config.ts`中获取.
 
 
-### 3. 需要注意的一些坑
+#### 2.3 改造`middleware/auth.ts`
 
-#### 3.1 自定义页面需要自己处理 `callbackUrl` 防止回调错误
 
-当用户成功登录后，`next-auth`会将用户重定向回之前的页面，或者回到我们配置的默认页面。如果你遇到回调错误，请确保正确处理`callbackUrl`，并在登录成功后进行适当的重定向。
 
-#### 3.2 登录系统的按钮我们使用`next-auth/react`组件的`signIn`函数，它会自动处理重定向，所以我们不需要自己处理。
-> **注意,我们不使用`auth.ts`导出的`signIn`函数，因为在处理重定向的时候会有Url跳转失败的问题,导致后续流程会有bug。**
-详情查看官方issue:  [https://github.com/nextauthjs/next-auth/issues/11713](https://github.com/nextauthjs/next-auth/issues/11713)
+## 延伸探讨: 为什么又要改造`auth.ts`
 
-### 4. 启动
+> 为什么反复强调这里,因为`nextjs`的恶心机制,导致在`middleware`无法支持数据库连接,所以拆分后,我们可以独立配置数据库相关的配置.
 
-#### 4.1 安装依赖
+> `Nextjs`恶心的`middleware`无法开启`nodejs runtime`的机制,在社区也有很大的探讨,但是目前暂时没有好的解决方案.我也一直在跟进官方的进度,近期,维护者有提起这个问题,并提出了在`page/route`上建立一套新的`middleware`的方案,但是目前仍然没有进度,后续我会出一篇文章重点讲解一下`nodejs runtime`和`edge runtime`有什么坑.
 
-确保安装了所有必需的依赖：
+> [关于middleware的讨论(Switchable Runtime for Middleware (Allow Node.js APIs in Middleware)
+)](!https://github.com/vercel/next.js/discussions/46722#discussioncomment-10534577)
 
-```bash
-npm install
-```
+![维护者提出改善方案](doc/maintainer.png)
 
-#### 4.2 启动项目
 
-使用以下命令启动开发服务器：
 
-```bash
-npm run dev
-```
-
-![首页](doc/home.png)
-![个人信息](doc/main.png) 
-
-现在你可以访问本地开发服务器，查看并测试自定义的登录页面。
 
 ### TODO:
-- [ ] 使用数据库管理账户信息，集成注册页面
-- [ ] 完善账号的其他功能，如密码重置、邮箱验证等
-- [ ] 优化用户体验，添加更多的UI交互效果和状态提示
+- [x] 使用数据库管理账户信息，集成注册页面
+- [ ] 整合,打造`Nextjs`的统一账户中心
 
  
