@@ -20,6 +20,16 @@ export default async function ProtectedPage() {
           height={38}
           priority
         />
+        {user.image && (
+          <Image
+            className="dark:invert w-20 rounded-full shadow"
+            src={user.image}
+            alt="Next.js Boy"
+            width={180}
+            height={38}
+            priority
+          />
+        )}
         <div>账号：{user.id}</div>
         <div>昵称：{user.name}</div>
         <div>此处演示，必须登录才可以使用的页面</div>

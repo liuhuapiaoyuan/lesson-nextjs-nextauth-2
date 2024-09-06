@@ -2,7 +2,6 @@ import NextAuth from "next-auth";
 import { Provider } from "next-auth/providers";
 import credentials from "next-auth/providers/credentials";
 import GitHub from "next-auth/providers/github";
-import { AuthConfig } from "./auth.config";
 
 const providers :Provider[]= [
   GitHub,
@@ -21,14 +20,15 @@ const providers :Provider[]= [
           id: "1",
           username: credentials.username,
           name: credentials.username,
-          isNewUser:true
+          image:"/logo.png"
         };
       }
       return null;
     },
   }),
 ];
- 
+
+
 export const providerList = providers
   .map((provider) => {
     if (typeof provider === "function") {
@@ -38,7 +38,13 @@ export const providerList = providers
   })
   .filter((provider) => provider.id !== "credentials")
 
+  
 export const { signIn, signOut, auth, handlers } = NextAuth({
-  ...AuthConfig,
+  session: {
+    strategy: "jwt",
+  },
   providers,
+  pages: {
+    signIn: "/signin",
+  },
 });
