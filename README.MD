@@ -11,7 +11,8 @@
 ## 前置知识
 
 - 一起干翻next-auth@5.0系列(三): 授权登录集成到数据库
-- prisma: 一个成熟的`NodejsOrm`工具
+- 一起干翻next-auth@5.0系列(四): 自定义登录页面 UI
+- prisma: 一个成熟的`Nodejs`的`ORM`工具
 - sqlite: 最简单的基于文件系统的数据库
 
 ## 技术点分析
