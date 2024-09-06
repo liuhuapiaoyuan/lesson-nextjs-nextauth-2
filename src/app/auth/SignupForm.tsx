@@ -1,22 +1,10 @@
-import { register } from "@/auth";
-import { redirect, RedirectType } from "next/navigation";
-import { Input } from "../../../components/Input";
-
-async function action(formData: FormData) {
-  "use server";
-  try {
-    await register(formData);
-    // 注册成功就去登录
-    await redirect("/signin", RedirectType.replace);
-  } catch (error) {
-    throw error;
-  }
-}
+import { Input } from "../../components/Input";
+import { signUpAction } from "./action";
 
 export function SignupForm(props: { callbackUrl?: string; nickname?: string }) {
   const { callbackUrl, nickname } = props;
   return (
-    <form className="flex flex-col gap-2 p-2 " action={action}>
+    <form className="flex flex-col gap-2 p-2 " action={signUpAction}>
       <input type="hidden" name="redirectTo" value={callbackUrl} />
 
       <Input

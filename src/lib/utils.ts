@@ -1,6 +1,9 @@
 
 
 
+import { ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+
 // 随机字符串
 export function randomString(length: number) {
   let result = '';
@@ -11,3 +14,8 @@ export function randomString(length: number) {
   }
   return result;
 }   
+
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}

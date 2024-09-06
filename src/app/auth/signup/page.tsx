@@ -83,7 +83,7 @@ export default async function SignupPage({
           ))}
         </div>
         <a
-          href="/signin"
+          href="/auth/signin"
           className="hover:text-brand underline  text-center text-sm underline-offset-4"
         >
           已经有账号? 点击登录

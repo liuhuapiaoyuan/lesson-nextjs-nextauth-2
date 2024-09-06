@@ -8,11 +8,13 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { AdapterUser } from "next-auth/adapters";
 import { cookies } from "next/headers";
 import { userService } from "./app/service/user.service";
+import Wechat from "./lib/auth/provider/Wechat";
 import { randomString } from "./lib/utils";
 import { prisma } from "./prisma";
 
 const providers: Provider[] = [
   GitHub,
+  Wechat,
   credentials({
     credentials: {
       username: {},

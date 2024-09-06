@@ -4,6 +4,7 @@ export interface InputProps {
   placeholder: string;
   type?: string;
   defaultValue?: string;
+  className?: string;
 }
 export const Input: React.FC<InputProps> = ({
   label,

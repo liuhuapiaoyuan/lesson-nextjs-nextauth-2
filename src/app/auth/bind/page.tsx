@@ -1,8 +1,7 @@
 import { loadBindAccountInfo, providerList } from "@/auth";
 import Image from "next/image";
 import { redirect, RedirectType } from "next/navigation";
-import { LoginForm } from "./LoginForm";
-import { SignupForm } from "./SignupForm";
+import { BindTabs } from "./BindTabs";
 
 export default async function Page() {
   const { bindAccount, account, user } = await loadBindAccountInfo();
@@ -23,8 +22,6 @@ export default async function Page() {
 .section:target {
     display: block;
 }  
-    
- 
   `}
       </style>
       <div className="flex flex-col gap-2 p-5 w-[600px]  rounded-lg  border shadow-md">
@@ -64,26 +61,7 @@ export default async function Page() {
           />
           <div>{user?.name}</div>
         </div>
-        <div>
-          <div id="section1" className="section">
-            <LoginForm />
-            <a
-              href="#section2"
-              className="hover:text-brand block underline  text-center text-sm underline-offset-4"
-            >
-              没有账号? 点击注册绑定
-            </a>
-          </div>
-          <div id="section2" className="section">
-            <SignupForm nickname={user?.name!} />
-            <a
-              href="#section1"
-              className="hover:text-brand block underline  text-center text-sm underline-offset-4"
-            >
-              已有账号? 点击直接绑定
-            </a>
-          </div>
-        </div>
+        <BindTabs />
       </div>
     </div>
   );

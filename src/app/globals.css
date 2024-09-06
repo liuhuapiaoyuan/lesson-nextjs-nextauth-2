@@ -19,3 +19,22 @@ body {
   background: var(--background);
   font-synthesis: none;
 }
+
+
+.tab-item-content {
+  display: none;
+}
+.tab-item-content:target {
+  display: block;
+}
+ 
+
+.no-visible-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.no-visible-scrollbar::-webkit-scrollbar {
+  display: none;
+}
