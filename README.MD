@@ -88,7 +88,7 @@ if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 
 由于`Nextjs/Middleware`不支持数据库连接,我们来拆分出`auth.config.ts`文件,让它只负责`NextAuth`的配置,而数据库的连接交给`auth.ts`来管理.
 
-![依赖关系如上](doc/auth.config.png)
+![依赖关系如上](https://cdn.kedao.ggss.club/markdown/nextauth-custom-ui-sqlite/auth.config.png)
 
 #### 2.1 创建 `src/auth.config.ts`
 
@@ -262,15 +262,15 @@ const registActionForm = z
 
 ## 项目源代码：
 
-[查看源代码](https://github.com/liuhuapiaoyuan/lesson-nextjs-nextauth-2/tree/custom-ui-sqlite)
+[查看源代码:分支-custom-ui-sqlite](https://github.com/liuhuapiaoyuan/lesson-nextjs-nextauth-2/tree/custom-ui-sqlite)
 
-![登录页面](doc/signin.png)
+![登录页面](https://cdn.kedao.ggss.club/markdown/nextauth-custom-ui-sqlite/signin.png)
 
-![注册页面](doc/signup.png)
+![注册页面](https://cdn.kedao.ggss.club/markdown/nextauth-custom-ui-sqlite/signup.png)
 
-![错误提示](doc/signin.error.png)
+![错误提示](https://cdn.kedao.ggss.club/markdown/nextauth-custom-ui-sqlite/signin.error.png)
 
-![基于zod的错误提示](doc/signup.zod.png)
+![基于zod的错误提示](https://cdn.kedao.ggss.club/markdown/nextauth-custom-ui-sqlite/signup.zod.png)
 
 ## 延伸探讨: 为什么又要改造`auth.ts`
 
@@ -281,7 +281,7 @@ const registActionForm = z
 > [关于 middleware 的讨论(Switchable Runtime for Middleware (Allow Node.js APIs in Middleware)
 > )](!https://github.com/vercel/next.js/discussions/46722#discussioncomment-10534577)
 
-![维护者提出改善方案](doc/maintainer.png)
+![维护者提出改善方案](https://cdn.kedao.ggss.club/markdown/nextauth-custom-ui-sqlite/maintainer.png)
 
 ### 即将开启项目实践： 打造符合国情的`Nextjs`统一账户中心
 
@@ -289,3 +289,6 @@ const registActionForm = z
 - [ ] 是用短信验证码绑定手机号码
 - [ ] 丰富的第三方登录集成：微信扫码登录、Gitee 登录、小程序扫码登录
 - [ ] 完善的第三方授权的登录处理流程（绑定老账户/创建新账号）
+
+![统一账户中心-登录](https://cdn.kedao.ggss.club/markdown/nextauth-custom-ui-sqlite/nextjs-uaa-oauth-login.png) 
+![统一账户中心-绑定授权](https://cdn.kedao.ggss.club/markdown/nextauth-custom-ui-sqlite/nextjs-uaa-login.png)
