@@ -77,6 +77,7 @@ export const { signIn, signOut, auth, handlers } = NextAuth({
 type UserRegisterType = {
   username: string;
   password: string;
+  nickname?: string;
   confirmPassword: string;
   redirectTo?: string;
 };
@@ -87,15 +88,15 @@ type UserRegisterType = {
  * @param formData 
  */
 export async function register(formData:FormData){
-  const { user, bindAccount, account } = await loadBindAccountInfo();
+  const { user, bindAccount, account , } = await loadBindAccountInfo();
   // 获得账号密码
-  const { username, password , confirmPassword , redirectTo } = Object.fromEntries(formData) as UserRegisterType
+  const { username, password , nickname,confirmPassword , redirectTo } = Object.fromEntries(formData) as UserRegisterType
   if(password!== confirmPassword){
     throw new CredentialsSignin("两次输入密码不一致")
   }
   // 创建账号
   const adapterUser = await userService.createUser(username, password , user ?? {
-    name:"NextjsBoy_"+randomString(4)
+    name:nickname??"NextjsBoy_"+randomString(4)
   })
   if(bindAccount && account && user){
     await authAdapter.linkAccount?.({...account , userId: adapterUser.id,type:"oauth" })
@@ -116,9 +117,15 @@ function cleanBindAccountInfo() {
  */
 export async function loadBindAccountInfo() {
   const cookie = cookies();
-  const account = JSON.parse(cookie.get("nextauth.bind.account")?.value ?? "null") as Account | null;
-  const user = JSON.parse(cookie.get("nextauth.bind.user")?.value ?? "null") as AdapterUser | null;
-  const bindAccount = account && user;
+  try {
+    const account = JSON.parse(cookie.get("nextauth.bind.account")?.value ?? "null") as Account | null;
+    const user = JSON.parse(cookie.get("nextauth.bind.user")?.value ?? "null") as AdapterUser | null;
+    const bindAccount = account && user;
+    return { user, bindAccount, account };
+    
+  } catch (error) {
+    return { user:null, bindAccount:false, account :null};
+    
+  }
   
-  return { user, bindAccount, account };
 }

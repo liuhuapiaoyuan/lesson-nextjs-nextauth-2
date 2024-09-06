@@ -23,7 +23,7 @@ export default async function Home() {
           height={38}
           priority
         />
-        <div>当前账号信息 ：{session?.user?.id ?? "未登录"}</div>
+        <div>当前账号信息 ：{session?.user?.name ?? "未登录"}</div>
         {session?.user && (
           <>
             {session.user.image && (
