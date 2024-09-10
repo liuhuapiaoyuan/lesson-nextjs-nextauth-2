@@ -2,7 +2,22 @@ import { NextAuthConfig } from "next-auth";
 import { AdapterUser } from "next-auth/adapters";
 
 type CallbacksType = NonNullable<NextAuthConfig['callbacks']>
+
+
 export type CallbackSignInFunction = NonNullable<CallbacksType['signIn']>
+export type CallbackSessionInFunction = NonNullable<CallbacksType["session"]>
+
+ 
+/* declare module "next-auth" {
+  // Returned by `useSession`, `getSession` and received as a prop on the `SessionProvider` React Context
+  interface Session {
+    user: {
+      userId:string
+    } & DefaultSession["user"]
+  }
+}
+ */
+
 export interface DBAdapterUser extends Omit<AdapterUser, "email"> {
   /**
    * 邮箱

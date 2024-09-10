@@ -17,12 +17,14 @@ import { prisma } from "./prisma";
  */
 export class UserService implements IUserService{
   async login(username: string, password: string, type?: "password" | "mobile"): Promise<DBAdapterUser> {
+ 
     const user = await  userService.login(username,password)
     if (!user) {
       throw new CredentialsSignin("账号或者密码错误")
     }
     return {
       id: user.id,
+      userId: user.id,
       name: user.name,
       email: user.email!,
       image: user.image,

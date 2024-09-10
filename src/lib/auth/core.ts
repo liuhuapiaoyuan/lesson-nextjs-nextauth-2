@@ -9,7 +9,7 @@ import NextAuth, {
 import { Adapter, AdapterUser } from "next-auth/adapters";
 import credentials from "next-auth/providers/credentials";
 import { cookies } from "next/headers";
-import { CallbackSignInFunction, IUserService } from "./type";
+import { CallbackSessionInFunction, CallbackSignInFunction, IUserService } from "./type";
 
 function cleanBindAccountInfo() {
   const cookie = cookies();
@@ -61,8 +61,7 @@ export class CredentialsOauth {
       authorize: async (credentials) => {
         if (
           typeof credentials.username === "string" &&
-          typeof credentials.password === "string" &&
-          typeof credentials.type === "string"
+          typeof credentials.password === "string"  
         ) {
           const { bindAccount, account } = await loadBindAccountInfo();
           const user = await this.userService.login(
@@ -105,7 +104,18 @@ export class CredentialsOauth {
     cookie.set("nextauth.bind.user", JSON.stringify(user));
     return "/auth/bind#section1";
   }
-
+  private async sessionCallback(params:Parameters<CallbackSessionInFunction>[0]) {
+    const { session, token, user } = params;
+    const newSession = {
+      ...session,
+      user: {
+        ...session.user,
+        name: token.name?? user?.name,
+        id: user?.id ?? token?.sub,
+      },
+    }
+    return newSession
+  }
   
 
   /**
@@ -125,6 +135,14 @@ export class CredentialsOauth {
             }
             return reuslt
         },
+        session: async (params)=>{
+          let session  =await this.sessionCallback(params)
+          if (typeof config.callbacks?.session==='function') {
+            return  config.callbacks?.session({...params, session})
+          }
+          return session
+        },
+
       },
     });
      const oauthProviders = config.providers?.map((provider) => {

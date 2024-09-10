@@ -31,6 +31,7 @@ export default async function ProtectedPage() {
             priority
           />
         )}
+        <div>账号：{JSON.stringify(session)}</div>
         <div>账号：{user.id}</div>
         <div>昵称：{user.name}</div>
         <div>绑定信息列表:</div>
