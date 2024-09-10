@@ -24,7 +24,6 @@ export class UserService implements IUserService{
     }
     return {
       id: user.id,
-      userId: user.id,
       name: user.name,
       email: user.email!,
       image: user.image,
@@ -46,7 +45,6 @@ export class UserService implements IUserService{
       emailVerified: adapterUser.emailVerified,
       username: adapterUser.username!,
     }
-    
   }
 
   /**
@@ -74,6 +72,7 @@ export const { signIn, signOut,listAccount, unBindOauthAccountInfo,auth, handler
     GitHub,
     Wechat, 
   ],
+  bindPage:"/auth/bind",
   adapter: authAdapter, 
   userService:new UserService()
 });

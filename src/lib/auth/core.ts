@@ -42,9 +42,11 @@ export async function loadBindAccountInfo() {
 export class CredentialsOauth {
   private userService: IUserService;
   private authAdapter: Adapter;
-  constructor(userService: IUserService, nextAuthAdapter: Adapter) {
+  private bindPage:string
+  constructor(userService: IUserService, nextAuthAdapter: Adapter,bindPage:string="/auth/bind") {
     this.userService = userService;
     this.authAdapter = nextAuthAdapter;
+    this.bindPage = bindPage
   }
   /**
    * 构建账号密码登录的provider
@@ -102,7 +104,7 @@ export class CredentialsOauth {
     const cookie = cookies();
     cookie.set("nextauth.bind.account", JSON.stringify(account));
     cookie.set("nextauth.bind.user", JSON.stringify(user));
-    return "/auth/bind#section1";
+    return bindPage;
   }
   private async sessionCallback(params:Parameters<CallbackSessionInFunction>[0]) {
     const { session, token, user } = params;
@@ -220,16 +222,22 @@ export class CredentialsOauth {
 export function AdavanceNextAuth(
   config: NextAuthConfig & {
     /**
+     * 第三方账号首次登录绑定页面
+     */
+    bindPage?:string
+    /**
      * 配置用户数据库服务
      */
     userService: IUserService;
     adapter: Adapter;
   }
 ) {
-  const {   userService, ...nextAuthConfig } = config;
+  const {bindPage,   userService, pages , ...nextAuthConfig } = config;
   const credentialsProvider = new CredentialsOauth(
     userService,
-    config.adapter  
+    config.adapter   , 
+    bindPage
   );
+
   return credentialsProvider.nextAuth(nextAuthConfig);
 }
