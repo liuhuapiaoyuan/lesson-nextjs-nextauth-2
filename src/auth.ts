@@ -47,15 +47,26 @@ export class UserService implements IUserService{
     
   }
 
+  /**
+   * 获得绑定的第三方数据
+   */
+  async listAccount(userId:string){
+    return prisma.account.findMany({
+      where:{
+        userId:userId
+      }
+    })
+  }
+
 }
 
  
 /**
- * 授权适配器a
+ * 授权适配器
  */
 export const authAdapter = PrismaAdapter(prisma);
 
-export const { signIn, signOut, unBindOauthAccountInfo,auth, handlers ,regist  , oauthProviders} = AdavanceNextAuth({
+export const { signIn, signOut,listAccount, unBindOauthAccountInfo,auth, handlers ,regist  , oauthProviders} = AdavanceNextAuth({
   ...AuthConfig,
   providers:[
     GitHub,

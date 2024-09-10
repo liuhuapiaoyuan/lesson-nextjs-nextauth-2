@@ -1,9 +1,10 @@
 // 账号注册
 
+import { auth } from "@/auth";
 import NextAuth, {
-    Account,
-    CredentialsSignin,
-    NextAuthConfig,
+  Account,
+  CredentialsSignin,
+  NextAuthConfig,
 } from "next-auth";
 import { Adapter, AdapterUser } from "next-auth/adapters";
 import credentials from "next-auth/providers/credentials";
@@ -84,6 +85,7 @@ export class CredentialsOauth {
     });
   }
   
+  
   private async signInCallback(params: Parameters<CallbackSignInFunction>[0]) {
     const { user, account, profile } = params;
     if (account?.type !== "oauth") {
@@ -103,6 +105,8 @@ export class CredentialsOauth {
     cookie.set("nextauth.bind.user", JSON.stringify(user));
     return "/auth/bind#section1";
   }
+
+  
 
   /**
    *
@@ -160,11 +164,23 @@ export class CredentialsOauth {
         });
       }
     };
-    // 获得第三方临时授权账户信息
+    /**
+     * 列出绑定的授权账户列表
+     * @returns 
+     */
+    const listAccount = async()=>{
+      const session = await auth()
+      const userId = session?.user?.id
+      if (userId) {
+        return this.userService.listAccount(userId)
+      }
+      return []
+    }
 
     return { 
         ...nextAuthInstance  ,
         oauthProviders,  
+        listAccount,
         regist , 
         /**
          * 未绑定的临时账户信息
@@ -185,6 +201,9 @@ export class CredentialsOauth {
  */
 export function AdavanceNextAuth(
   config: NextAuthConfig & {
+    /**
+     * 配置用户数据库服务
+     */
     userService: IUserService;
     adapter: Adapter;
   }

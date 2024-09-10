@@ -47,4 +47,10 @@ export interface IUserService {
     formData: Record<string, string>;
     /* 支持其他参数 */
   }): Promise<DBAdapterUser>;
+
+  /**
+   * 绑定的第三方授权信息
+   * @param userId 
+   */
+  listAccount(userId:string):Promise<Array<{provider:string,providerAccountId:string}>>
 }
