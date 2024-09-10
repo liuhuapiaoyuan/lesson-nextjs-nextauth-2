@@ -5,7 +5,7 @@ import { AuthConfig } from "./auth.config";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { userService } from "./app/service/user.service";
 import { AdavanceNextAuth } from "./lib/auth/core";
-import Wechat from "./lib/auth/provider/Wechat";
+import WechatMp from "./lib/auth/provider/WechatMp";
 import { DBAdapterUser, IUserService } from "./lib/auth/type";
 import { randomString } from "./lib/utils";
 import { prisma } from "./prisma";
@@ -81,7 +81,7 @@ export const { signIn, signOut,listAccount, unBindOauthAccountInfo,auth, handler
   ...AuthConfig,
   providers:[
     GitHub,
-    Wechat, 
+    WechatMp, 
   ],
   /* 自定义绑定授权页面 */
   bindPage:"/auth/bind",

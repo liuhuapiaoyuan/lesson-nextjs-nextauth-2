@@ -104,7 +104,7 @@ export class CredentialsOauth {
     const cookie = cookies();
     cookie.set("nextauth.bind.account", JSON.stringify(account));
     cookie.set("nextauth.bind.user", JSON.stringify(user));
-    return bindPage;
+    return this.bindPage;
   }
   private async sessionCallback(params:Parameters<CallbackSessionInFunction>[0]) {
     const { session, token, user } = params;
