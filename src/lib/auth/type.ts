@@ -52,5 +52,8 @@ export interface IUserService {
    * 绑定的第三方授权信息
    * @param userId 
    */
-  listAccount(userId:string):Promise<Array<{provider:string,providerAccountId:string}>>
+  listAccount(userId:string):Promise<Array<{
+    type:string,
+    id:string,
+    provider:string,providerAccountId:string}>>
 }

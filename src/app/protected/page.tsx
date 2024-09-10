@@ -1,5 +1,4 @@
-import { auth, signIn } from "@/auth";
-import { prisma } from "@/prisma";
+import { auth, listAccount, signIn } from "@/auth";
 import Image from "next/image";
 
 export default async function ProtectedPage() {
@@ -9,11 +8,7 @@ export default async function ProtectedPage() {
   if (!user) {
     return signIn();
   }
-  const accounts = await prisma.account.findMany({
-    where: {
-      userId: user.id,
-    },
-  });
+  const accounts = await listAccount();
 
   return (
     <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
@@ -44,7 +39,7 @@ export default async function ProtectedPage() {
           <div key={account.id} className="shadow p-2 hover:bg-gray-100">
             <div>类型：{account.type}</div>
             <div>服务商：{account.provider}</div>
-            <div>账号：{account.access_token}</div>
+            <div>账号：{account.providerAccountId}</div>
           </div>
         ))}
         <div>此处演示，必须登录才可以使用的页面</div>
