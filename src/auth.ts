@@ -66,12 +66,24 @@ export class UserService implements IUserService{
  */
 export const authAdapter = PrismaAdapter(prisma);
 
+/**
+ * 导出如下字段：
+ * signIn: 登录函数，增强后可以自动判断绑定场景/登录查经
+ * signOut: 登出函数
+ * auth: 授权函数
+ * listAccount: 获得绑定的第三方数据
+ * unBindOauthAccountInfo: 解绑第三方账号
+ * handlers: 授权函数的中间件
+ * regist: 账户注册函数
+ * oauthProviders: 列出第三方登录提供商
+ */
 export const { signIn, signOut,listAccount, unBindOauthAccountInfo,auth, handlers ,regist  , oauthProviders} = AdavanceNextAuth({
   ...AuthConfig,
   providers:[
     GitHub,
     Wechat, 
   ],
+  /* 自定义绑定授权页面 */
   bindPage:"/auth/bind",
   adapter: authAdapter, 
   userService:new UserService()
