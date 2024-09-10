@@ -1,5 +1,5 @@
 "use server";
-import { register, signIn } from "@/auth";
+import { regist, signIn } from "@/auth";
 import { AuthError } from "next-auth";
 import { redirect, RedirectType } from "next/navigation";
 
@@ -24,7 +24,7 @@ export async function signInAction(formData: FormData) {
   export async function signUpAction(formData: FormData) {
     "use server";
     try {
-      await register(formData);
+      await regist(formData);
       // 注册成功就去登录
       await redirect("/signin", RedirectType.replace);
     } catch (error) {

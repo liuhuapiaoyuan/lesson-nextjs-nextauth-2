@@ -1,4 +1,4 @@
-import { providerList, register } from "@/auth";
+import { oauthProviders, regist } from "@/auth";
 import Image from "next/image";
 import { redirect, RedirectType } from "next/navigation";
 import { Input } from "../../../components/Input";
@@ -7,7 +7,7 @@ import { OauthButton } from "../../../components/OauthButton";
 async function action(formData: FormData) {
   "use server";
   try {
-    await register(formData);
+    await regist(formData);
     // 注册成功就去登录
     await redirect("/signin", RedirectType.replace);
   } catch (error) {
@@ -73,7 +73,7 @@ export default async function SignupPage({
           </div>
         </form>
         <div className="flex flex-col gap-2 p-2">
-          {providerList.map((provider) => (
+          {oauthProviders.map((provider) => (
             <OauthButton
               key={provider.id}
               id={provider.id}

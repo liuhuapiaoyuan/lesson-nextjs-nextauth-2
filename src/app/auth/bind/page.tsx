@@ -1,14 +1,15 @@
-import { loadBindAccountInfo, providerList } from "@/auth";
+import { oauthProviders, unBindOauthAccountInfo } from "@/auth";
 import Image from "next/image";
 import { redirect, RedirectType } from "next/navigation";
 import { BindTabs } from "./BindTabs";
 
 export default async function Page() {
-  const { bindAccount, account, user } = await loadBindAccountInfo();
+  const { bindAccount, account, user } = await unBindOauthAccountInfo();
+
   if (!bindAccount || !account) {
     await redirect("/", RedirectType.replace);
   }
-  const provider = providerList.find((z) => z.id === account?.provider);
+  const provider = oauthProviders.find((z) => z.id === account?.provider);
   if (!provider) {
     await redirect("/", RedirectType.replace);
   }

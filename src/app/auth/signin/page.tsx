@@ -1,4 +1,4 @@
-import { providerList } from "@/auth";
+import { oauthProviders } from "@/auth";
 import { OauthButton } from "@/components/OauthButton";
 import Image from "next/image";
 import { SigninForm } from "../SigninForm";
@@ -28,7 +28,7 @@ export default async function SignInPage({
           </div>
         </div>
         <div className="flex flex-col gap-2 p-2">
-          {providerList.map((provider) => (
+          {oauthProviders.map((provider) => (
             <OauthButton
               key={provider.id}
               id={provider.id}
