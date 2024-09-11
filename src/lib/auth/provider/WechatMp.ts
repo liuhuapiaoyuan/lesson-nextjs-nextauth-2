@@ -1,5 +1,9 @@
-import { AuthorizationEndpointHandler, OAuth2Config, OAuthUserConfig, UserinfoEndpointHandler } from "next-auth/providers"
-
+import { AuthorizationEndpointHandler, OAuth2Config, OAuthUserConfig, UserinfoEndpointHandler } from "next-auth/providers";
+import { wechatMpCaptchaManager } from "./WechatPlatformConfig";
+export type WechatPlatformConfig = {
+  clientId: string;
+  clientSecret: string;
+};
   
 export type WechatMpProfile = {
   /**
@@ -8,12 +12,6 @@ export type WechatMpProfile = {
   openid: string
   unionid: string
 }
-export type WechatPlatformConfig = {
-  clientId: string
-  clientSecret: string
-}
-
-
 /**
  * 微信公众号平台
  * [体验账号申请](https://mp.weixin.qq.com/debug/cgi-bin/sandbox?t=sandbox/login)
@@ -34,16 +32,14 @@ export default function WeChatMp<P extends WechatMpProfile>(
     params: {
       appid: clientId,
       response_type: "code",
-      state: Math.random(),
+      /* 产生验证码 */
+      state: wechatMpCaptchaManager.generate(),
     },
   }
  
 
   const userinfo: UserinfoEndpointHandler = {
     url: "http://localhost:3000/auth/qrcode2",
-    params: {
-      code:"CODE"
-    },
     async request({ tokens, provider }: any) {
       return {
         openid:tokens.openid , 
@@ -72,14 +68,9 @@ export default function WeChatMp<P extends WechatMpProfile>(
     clientSecret,
     authorization,
     token:{
-      url: "http://localhost:3000/api/auth/qrcode/toke1n",
-      async request(context){
-        console.log("走这边的请求了吗context" , JSON.stringify(context))
-        return {
-          tokens: {
-            openid:"asdsadas"
-          }
-        };
+      url: "http://localhost:3000/api/auth/wechatmp/callback",
+      params:{
+        state:"state"
       }
     },
     userinfo,

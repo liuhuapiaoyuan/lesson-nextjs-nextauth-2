@@ -232,7 +232,7 @@ export function AdavanceNextAuth(
     adapter: Adapter;
   }
 ) {
-  const {bindPage,   userService, pages , ...nextAuthConfig } = config;
+  const {bindPage,   userService,  ...nextAuthConfig } = config;
   const credentialsProvider = new CredentialsOauth(
     userService,
     config.adapter   , 
