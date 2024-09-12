@@ -6,6 +6,7 @@ type CallbacksType = NonNullable<NextAuthConfig['callbacks']>
 
 export type CallbackSignInFunction = NonNullable<CallbacksType['signIn']>
 export type CallbackSessionInFunction = NonNullable<CallbacksType["session"]>
+export type CallbackJwtFunction = NonNullable<CallbacksType["jwt"]>
 
  
 /* declare module "next-auth" {
