@@ -8,21 +8,23 @@ import { AdavanceNextAuth } from "./lib/auth/core";
 import Authing from "./lib/auth/provider/Authing";
 import Gitee from "./lib/auth/provider/Gitee";
 import WechatMp from "./lib/auth/provider/WechatMp";
+import { WechatMpApi } from "./lib/auth/provider/WechatMp/WechatMpApi";
 import { DBAdapterUser, IUserService } from "./lib/auth/type";
 import { randomString } from "./lib/utils";
 import { prisma } from "./prisma";
 
-
-
 /**
  * 定义转换器
  */
-export class UserService implements IUserService{
-  async login(username: string, password: string, type?: "password" | "mobile"): Promise<DBAdapterUser> {
- 
-    const user = await  userService.login(username,password)
+export class UserService implements IUserService {
+  async login(
+    username: string,
+    password: string,
+    type?: "password" | "mobile"
+  ): Promise<DBAdapterUser> {
+    const user = await userService.login(username, password);
     if (!user) {
-      throw new CredentialsSignin("账号或者密码错误")
+      throw new CredentialsSignin("账号或者密码错误");
     }
     return {
       id: user.id,
@@ -31,14 +33,18 @@ export class UserService implements IUserService{
       image: user.image,
       emailVerified: user.emailVerified,
       username: user.username!,
-    }
+    };
   }
-  async registUser(user: { username: string; password: string; formData: Record<string, string>; }): Promise<DBAdapterUser> {
-     const { username, password, formData } = user
-    const adapterUser = await userService.createUser(username, password , {
-      name:formData?.nickname??"NextjsBoy_"+randomString(4) ,
-      image:formData?.image
-    })
+  async registUser(user: {
+    username: string;
+    password: string;
+    formData: Record<string, string>;
+  }): Promise<DBAdapterUser> {
+    const { username, password, formData } = user;
+    const adapterUser = await userService.createUser(username, password, {
+      name: formData?.nickname ?? "NextjsBoy_" + randomString(4),
+      image: formData?.image,
+    });
     return {
       id: adapterUser.id,
       name: adapterUser.nickname,
@@ -46,28 +52,29 @@ export class UserService implements IUserService{
       image: adapterUser.image,
       emailVerified: adapterUser.emailVerified,
       username: adapterUser.username!,
-    }
+    };
   }
 
   /**
    * 获得绑定的第三方数据
    */
-  async listAccount(userId:string){
+  async listAccount(userId: string) {
     return prisma.account.findMany({
-      where:{
-        userId:userId
-      }
-    })
+      where: {
+        userId: userId,
+      },
+    });
   }
-
 }
 
- 
 /**
  * 授权适配器
  */
 export const authAdapter = PrismaAdapter(prisma);
-export const wechatMpProvider = WechatMp()
+export const wechatMpProvider = WechatMp({
+  type:"QRCODE",
+  wechatMpApi:new WechatMpApi()
+});
 /**
  * 导出如下字段：
  * signIn: 登录函数，增强后可以自动判断绑定场景/登录查经
@@ -79,20 +86,20 @@ export const wechatMpProvider = WechatMp()
  * regist: 账户注册函数
  * oauthProviders: 列出第三方登录提供商
  */
-export const { signIn, signOut,listAccount, unBindOauthAccountInfo,auth, handlers ,regist  , oauthProviders} = AdavanceNextAuth({
+export const {
+  signIn,
+  signOut,
+  listAccount,
+  unBindOauthAccountInfo,
+  auth,
+  handlers,
+  regist,
+  oauthProviders,
+} = AdavanceNextAuth({
   ...AuthConfig,
-  providers:[
-    GitHub,
-    Gitee,
-    Authing,
-    wechatMpProvider
-    , 
-  ],
+  providers: [GitHub, Gitee, Authing,  wechatMpProvider],
   /* 自定义绑定授权页面 */
-  bindPage:"/auth/bind",
-  adapter: authAdapter, 
-  userService:new UserService()
+  bindPage: "/auth/bind",
+  adapter: authAdapter,
+  userService: new UserService(),
 });
-
- 
- 

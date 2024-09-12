@@ -1,4 +1,3 @@
-import crypto from "crypto";
 import {
   AuthorizationEndpointHandler,
   OAuth2Config,
@@ -6,6 +5,7 @@ import {
   UserinfoEndpointHandler,
 } from "next-auth/providers";
 import { NextRequest } from "next/server";
+import { checkSignature, parseWehcatMessageXML, WechatMpApi } from "./WechatMpApi";
 import { WechatMpCaptchaManager } from "./WechatPlatformConfig";
 
 
@@ -17,12 +17,24 @@ if (process.env.NODE_ENV !== "production") globalForPrisma.wechatMpCaptchaManage
 
 
 export type WechatPlatformConfig = {
-  clientId: string;
-  clientSecret: string;
+  clientId?: string;
+  clientSecret?: string;
   /* 解密密钥*/
   encoderAESKey?: string;
   /* 消息令牌 */
-  token: string;
+  token?: string;
+  /**
+   * 验证类型 "MESSAGE"|"QRCODE"
+   * MESSAGE 回复消息
+   * QRCODE 临时二维码
+   * @default "MESSAGE"
+   */
+  type:"MESSAGE"|"QRCODE"
+  /**
+   * 认证账号必须提供
+   * 提供二维码创建工具，
+   */
+  wechatMpApi?:WechatMpApi
 };
 
 export type WechatMpProfile = {
@@ -33,38 +45,6 @@ export type WechatMpProfile = {
   unionid: string;
 };
 
-export function checkSignature(
-  signature: string,
-  timestamp: string,
-  nonce: string,
-  token: string
-) {
-  const tmpArr = [token, timestamp, nonce];
-  tmpArr.sort();
-  const tmpStr = tmpArr.join("");
-  const hash = crypto.createHash("sha1").update(tmpStr).digest("hex");
-  return hash === signature;
-}
-/**
- * 仅处理微信公众号消息的xml
- * @param xml
- * @returns
- */
-function parseWehcatMessageXML<T>(xml: string) {
-  const result: Record<string, string> = {};
-  // 匹配 XML 标签及其内容
-  const regex = /<(\w+)>(.*?)<\/\1>/g;
-  let match;
-
-  while ((match = regex.exec(xml)) !== null) {
-    const [, tag, content] = match;
-    // 处理 CDATA
-    const cleanContent = content.replace(/^<!\[CDATA\[|\]\]>$/g, "");
-    result[tag] = cleanContent;
-  }
-
-  return result as T;
-}
 
 /**
  * 处理Nextjs的GET/POST请求
@@ -120,9 +100,11 @@ async function handler(req: NextRequest, token: string) {
       MsgType: string;
       Content: string;
       MsgId: string;
+      EventKey?:string
     }>(xml);
-    // 
-    const status = await wechatMpCaptchaManager.complted(message.Content,{
+    // 如果有 Ticket 优先使用 Ticket 验证
+    const code =  message.EventKey ?? message.Content
+    const status = await wechatMpCaptchaManager.complted(code,{
       openid: message.FromUserName
     })
     return new Response(
@@ -152,24 +134,41 @@ export default function WeChatMp<P extends WechatMpProfile>(
   handler:{
     GET: (req:NextRequest)=>Promise<Response>,
     POST: (req:NextRequest)=>Promise<Response> , 
-    
   }
+  getScanUrl:()=>Promise<{
+    qrcode:string,
+    type:"MESSAGE"|"QRCODE",
+    ticket:string
+  }>
   options?: OAuthUserConfig<P> & WechatPlatformConfig } {
   const {
     clientId = process.env.AUTH_WECHATMP_APP_ID!,
     clientSecret = process.env.AUTH_WECHATMP_APP_SECRET!,
     encoderAESKey = process.env.AUTH_WECHATMP_ENCODER_AESKEY,
     token = process.env.AUTH_WECHATMP_TOKEN!,
+    type = process.env.AUTH_WECHATMP_TYPE ?? "MESSAGE",
+    wechatMpApi,
     // 令牌 开发者ID，开发者密码，消息加解密密钥
   } = options ?? {};
+  if (!clientId || !clientSecret || !token ) {
+    throw new Error("WechatMp platform requires client_id, client_secret, token");
+  }
+  if(type === "QRCODE" && typeof wechatMpApi === 'undefined'){
+    throw new Error("WechatMpApi is required for QRCODE type")
+  }
+  console.log("WechatMp platform options", {
+    clientId , 
+clientSecret,
+token , 
+type
+  });
 
   const authorization: AuthorizationEndpointHandler = {
     url: "http://localhost:3000/auth/qrcode",
     params: {
       appid: clientId,
       response_type: "code",
-      /* 产生验证码 */
-      state: wechatMpCaptchaManager.generate(),
+      state:"wechatmp"
     },
   };
 
@@ -206,10 +205,26 @@ export default function WeChatMp<P extends WechatMpProfile>(
     },
     userinfo,
     profile,
-    options,
     handler:{
       GET:(req:NextRequest)=>handler(req,token),
       POST:(req:NextRequest)=>handler(req,token)  
     },
+    async getScanUrl(){
+      const code = await wechatMpCaptchaManager.generate()
+      if(type === "QRCODE" && wechatMpApi){
+        const {  url } = await wechatMpApi.createPermanentQrcode(code)
+        return {
+          qrcode: url,
+          ticket:code,
+          type : "QRCODE"
+        }
+      }else{
+        return {
+          qrcode: "https://cdn.kedao.ggss.club/picgo0",
+          ticket: code,
+          type : "MESSAGE"
+        }
+      }
+    }
   };
 }

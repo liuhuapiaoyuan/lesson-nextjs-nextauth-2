@@ -29,9 +29,9 @@ export class WechatMpCaptchaManager<T = {
   /**
    * 生成验证码
    */
-  generate(): string {
+  generate(code?:string): string {
     this.cleanupExpired();
-    const captcha = Math.random().toString().substring(2,this.options.length + 2);
+    const captcha =code ?? Math.random().toString().substring(2,this.options.length + 2);
     this.cache.set(captcha, { expireAt: Date.now() + this.options.expireTime });
     return captcha;
   }
