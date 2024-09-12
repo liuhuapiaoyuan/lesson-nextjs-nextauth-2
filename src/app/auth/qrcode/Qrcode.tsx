@@ -47,19 +47,19 @@ export function Qrcode(props: {
 
       {type === "MESSAGE" && (
         <>
-          <div className="p-2  bg-white border shadow">
+          <div className="">
             <img
-              className="bg-white"
-              height={250}
-              width={250}
+              className=""
+              height={200}
+              width={200}
               src={qrcodeUrl}
               alt="二维码"
             />
           </div>
-          <div className="rounded-full bg-[#232323] p-3 text-center text-white">
+          <div className="rounded-full p-3 text-center bg-white">
             扫码--》关注公众号--》回复
           </div>
-          <div className="text-white text-center">
+          <div className=" text-center">
             <span>
               回复“
               <span className="text-red-500 font-bold">{code}</span>
@@ -70,14 +70,10 @@ export function Qrcode(props: {
       )}
       {type === "QRCODE" && (
         <>
-          <div className="p-2  bg-white border shadow">
-            <div className="w-[250px] h-[250px]">
+          <div className="">
+            <div className="w-[200px] h-[200px]">
               <QRCodeSVG className="w-full h-full" value={qrcodeUrl} />,
             </div>
-          </div>
-          <div className="rounded-full bg-[#232323] p-3 text-center text-white">
-            <span className="text-red-500 font-bold">扫码</span>
-            完成登录
           </div>
         </>
       )}

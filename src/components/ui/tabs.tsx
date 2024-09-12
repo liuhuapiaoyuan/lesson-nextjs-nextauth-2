@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useState } from "react";
 
 // 定义 TabItem 的类型
@@ -37,14 +38,15 @@ const Tab: React.FC<TabProps> = ({ options, activeTab, onChange }) => {
 
   return (
     <div className="tab-container">
-      <div className="tab-header flex gap-4  mb-4">
+      <div className="tab-header flex gap-4  mb-4 border-b-[1px] border-gray-500">
         {options.map((option) => (
           <button
+            type="button"
             key={option.value}
-            className={`py-2 flex-1 px-4 ${
+            className={`py-2  border-b-[2px] flex-1 px-4 ${
               internalActiveTab === option.value
-                ? "bg-blue-500 text-white"
-                : "bg-gray-200 text-gray-700"
+                ? "border-blue-500 text-blue-500"
+                : " border-[transparent] text-gray-500"
             }`}
             onClick={() => handleTabClick(option.value)}
           >

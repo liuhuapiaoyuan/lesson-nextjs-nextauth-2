@@ -40,10 +40,16 @@ export function OauthButton(props: OauthButtonProps) {
     >
       <button
         type="submit"
-        className="bg-[#f4f7fa] w-full m-auto px-6 py-2 rounded text-foreground hover:text-background hover:bg-[#0c0620] flex items-center justify-center"
+        className="bg-[#f4f7fa] p-2 w-[40px] h-[40px] rounded text-foreground hover:text-background hover:bg-[#0c0620] flex items-center justify-center"
       >
-        <Image src={`/providers/${id}.png`} alt={name} width={32} height={32} />
-        <span>{name}登录</span>
+        <Image
+          className="w-full h-full"
+          src={`/providers/${id}.png`}
+          alt={name}
+          width={32}
+          height={32}
+        />
+        {/*     <span>{name}登录</span> */}
       </button>
     </form>
   );

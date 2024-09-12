@@ -1,8 +1,12 @@
 import { Input } from "../../components/Input";
 import { signUpAction } from "./action";
 
-export function SignupForm(props: { callbackUrl?: string; nickname?: string }) {
-  const { callbackUrl, nickname } = props;
+export function SignupForm(props: {
+  callbackUrl?: string;
+  nickname?: string;
+  submitText?: string;
+}) {
+  const { submitText = "注册并绑定", callbackUrl, nickname } = props;
   return (
     <form className="flex flex-col gap-2 p-2 " action={signUpAction}>
       <input type="hidden" name="redirectTo" value={callbackUrl} />
@@ -26,12 +30,16 @@ export function SignupForm(props: { callbackUrl?: string; nickname?: string }) {
         placeholder="请再次输入密码"
         type="password"
       />
+      <div className="p-2 text-gray-400 text-sm">
+        我已阅读并同意 <span className="text-blue-500">服务协议</span> 和{" "}
+        <span className="text-blue-500">隐私条款</span>
+      </div>
       <div>
         <button
           type="submit"
           className="bg-[#272e3f] hover:bg-opacity-80 w-full px-6 py-2 rounded text-white "
         >
-          注册并绑定
+          {submitText}
         </button>
       </div>
     </form>
