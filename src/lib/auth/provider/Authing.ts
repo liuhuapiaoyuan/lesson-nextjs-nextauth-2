@@ -136,7 +136,7 @@ export default function Authing<P extends AuthingProfile>(
     id: "authing",
     name: "Authing",
     type: "oidc",
-    style: { logo: "/providers/Authing.jpg", bg: "#fff", text: "#000" },
+    style: { logo: "/providers/authing.svg", bg: "#fff", text: "#000" },
     checks: ["state"],
     clientId,
     clientSecret,

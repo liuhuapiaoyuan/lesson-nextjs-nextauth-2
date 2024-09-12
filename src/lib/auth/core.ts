@@ -7,6 +7,7 @@ import NextAuth, {
   NextAuthConfig,
 } from "next-auth";
 import { Adapter, AdapterUser } from "next-auth/adapters";
+import { OAuthProviderButtonStyles, Provider } from "next-auth/providers";
 import credentials from "next-auth/providers/credentials";
 import { cookies } from "next/headers";
 import { CallbackSessionInFunction, CallbackSignInFunction, IUserService } from "./type";
@@ -147,11 +148,12 @@ export class CredentialsOauth {
 
       },
     });
-     const oauthProviders = config.providers?.map((provider) => {
+     const oauthProviders = config.providers?.map((provider :Provider) => {
     if (typeof provider === "function") {
       provider = provider();
     }
-    return { id: provider.id, name: provider.name };
+    /* @ts-ignore */
+    return { id: provider.id, name: provider.name , style:provider.style  as OAuthProviderButtonStyles};
   })
   .filter((provider) => provider.id !== "credentials");
     /**

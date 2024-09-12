@@ -14,6 +14,7 @@ export function SigninProviders(props: { callbackUrl?: string }) {
       <div className="flex gap-5 p-2  justify-center">
         {oauthProviders.map((provider) => (
           <OauthButton
+            icon={provider.style.logo}
             key={provider.id}
             id={provider.id}
             name={provider.name}

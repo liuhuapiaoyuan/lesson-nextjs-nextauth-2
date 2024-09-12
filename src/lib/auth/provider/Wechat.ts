@@ -122,7 +122,7 @@ export default function WeChat<P extends WeChatProfile>(
     id: "wechat",
     name: "微信",
     type: "oauth",
-    style: { logo: "/providers/wechat.png", bg: "#fff", text: "#000" },
+    style: { logo: "/providers/wechatPcScanQRCode.svg", bg: "#fff", text: "#000" },
     checks: ["pkce", "state"],
     clientId,
     clientSecret,

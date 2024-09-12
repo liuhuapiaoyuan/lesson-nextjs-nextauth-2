@@ -195,7 +195,7 @@ type
     id: "wechatmp",
     name: "微信公众号关注",
     type: "oauth",
-    style: { logo: "/providers/wechatmp.png", bg: "#fff", text: "#000" },
+    style: { logo: "/providers/wechatOfficialAccount.svg", bg: "#fff", text: "#000" },
     checks: ["none"],
     clientId,
     clientSecret,
