@@ -38,7 +38,7 @@ const Tab: React.FC<TabProps> = ({ options, activeTab, onChange }) => {
 
   return (
     <div className="tab-container">
-      <div className="tab-header flex gap-4  mb-4 border-b-[1px] border-gray-500">
+      <div className="tab-header flex gap-4  mb-4 border-b-[1px] border-gray-300">
         {options.map((option) => (
           <button
             type="button"
