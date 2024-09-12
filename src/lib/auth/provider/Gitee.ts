@@ -86,7 +86,7 @@ export default function Gitee<P extends GiteeProfile>(
     id: "gitee",
     name: "Gitee登录",
     type: "oauth",
-    style: { logo: "/providers/gitee2.svg", bg: "#fff", text: "#000" },
+    style: { logo: "/providers/gitee2.svg", brandColor: "#fff", text: "#000" },
     checks: ["pkce", "state"],
     clientId,
     clientSecret,

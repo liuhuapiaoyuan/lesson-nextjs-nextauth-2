@@ -17,6 +17,7 @@ export function SigninProviders(props: { callbackUrl?: string }) {
             icon={provider.style.logo}
             key={provider.id}
             id={provider.id}
+            backgroundColor={provider.style.brandColor}
             name={provider.name}
             callbackUrl={callbackUrl}
           />

@@ -156,12 +156,7 @@ export default function WeChatMp<P extends WechatMpProfile>(
   if(type === "QRCODE" && typeof wechatMpApi === 'undefined'){
     throw new Error("WechatMpApi is required for QRCODE type")
   }
-  console.log("WechatMp platform options", {
-    clientId , 
-clientSecret,
-token , 
-type
-  });
+   
 
   const authorization: AuthorizationEndpointHandler = {
     url: "http://localhost:3000/auth/qrcode",

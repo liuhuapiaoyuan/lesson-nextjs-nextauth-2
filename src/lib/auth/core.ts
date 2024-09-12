@@ -10,7 +10,7 @@ import { Adapter, AdapterUser } from "next-auth/adapters";
 import { OAuthProviderButtonStyles, Provider } from "next-auth/providers";
 import credentials from "next-auth/providers/credentials";
 import { cookies } from "next/headers";
-import { CallbackSessionInFunction, CallbackSignInFunction, IUserService } from "./type";
+import { CallbackJwtFunction, CallbackSessionInFunction, CallbackSignInFunction, IUserService } from "./type";
 
 function cleanBindAccountInfo() {
   const cookie = cookies();
@@ -119,6 +119,17 @@ export class CredentialsOauth {
     }
     return newSession
   }
+  private async jwtCallback(params:Parameters<CallbackJwtFunction>[0]) {
+    const { token, user, trigger } = params
+    if(trigger==='signIn') {
+      /* @ts-ignore */
+      token.name = user?.nickname??user?.name 
+      token.sub = user?.id
+      token.email = user?.email
+      token.picture = user?.image
+    }
+    return token
+  }
   
 
   /**
@@ -132,6 +143,7 @@ export class CredentialsOauth {
       providers: (config.providers ?? []).concat(this.getCredentialsProvider()),
       callbacks: {
         signIn: async (params) => {
+          console.log("登录成功" , params)
             const reuslt = await this.signInCallback(params)
             if (reuslt === true && typeof config.callbacks?.signIn==='function') {
                 return config.callbacks?.signIn(params)
@@ -145,7 +157,13 @@ export class CredentialsOauth {
           }
           return session
         },
-
+        jwt: async (params) => {
+          let token  =await this.jwtCallback(params)
+          if (typeof config.callbacks?.jwt==='function') {
+            return  config.callbacks?.jwt({...params, token})
+          }
+          return token
+        }
       },
     });
      const oauthProviders = config.providers?.map((provider :Provider) => {

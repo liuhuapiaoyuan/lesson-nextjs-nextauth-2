@@ -7,11 +7,12 @@ type OauthButtonProps = {
   id: string;
   name: string;
   callbackUrl?: string;
+  backgroundColor?: string;
   icon?: string;
 };
 
 export function OauthButton(props: OauthButtonProps) {
-  const { name, icon, id, callbackUrl } = props;
+  const { name, backgroundColor, icon, id, callbackUrl } = props;
   return (
     <form
       key={name}
@@ -44,6 +45,7 @@ export function OauthButton(props: OauthButtonProps) {
         className="bg-[#f4f7fa] p-2 w-[40px] h-[40px] rounded text-foreground hover:text-background hover:bg-[#0c0620] flex items-center justify-center"
       >
         <Image
+          style={{ backgroundColor }}
           className="w-[40px] "
           src={icon ?? `/providers/${id}.png`}
           alt={name}
