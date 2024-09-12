@@ -5,6 +5,8 @@ import { AuthConfig } from "./auth.config";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { userService } from "./app/service/user.service";
 import { AdavanceNextAuth } from "./lib/auth/core";
+import Authing from "./lib/auth/provider/Authing";
+import Gitee from "./lib/auth/provider/Gitee";
 import WechatMp from "./lib/auth/provider/WechatMp";
 import { DBAdapterUser, IUserService } from "./lib/auth/type";
 import { randomString } from "./lib/utils";
@@ -65,7 +67,7 @@ export class UserService implements IUserService{
  * 授权适配器
  */
 export const authAdapter = PrismaAdapter(prisma);
-
+export const wechatMpProvider = WechatMp()
 /**
  * 导出如下字段：
  * signIn: 登录函数，增强后可以自动判断绑定场景/登录查经
@@ -81,7 +83,10 @@ export const { signIn, signOut,listAccount, unBindOauthAccountInfo,auth, handler
   ...AuthConfig,
   providers:[
     GitHub,
-    WechatMp, 
+    Gitee,
+    Authing,
+    wechatMpProvider
+    , 
   ],
   /* 自定义绑定授权页面 */
   bindPage:"/auth/bind",

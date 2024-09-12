@@ -31,8 +31,7 @@ export class WechatMpCaptchaManager<T = {
    */
   generate(): string {
     this.cleanupExpired();
-    const captcha = Math.random().toString(36).substring(2, 2 + this.options.length);
-    // 放入到缓存
+    const captcha = Math.random().toString().substring(2,this.options.length + 2);
     this.cache.set(captcha, { expireAt: Date.now() + this.options.expireTime });
     return captcha;
   }
@@ -42,13 +41,15 @@ export class WechatMpCaptchaManager<T = {
    * @param captcha
    * @param data
    */
-  complted(captcha: string, data: T): void {
+  complted(captcha: string, data: T) {
     if (this.cache.has(captcha)) {
       const entry = this.cache.get(captcha);
       if (entry && entry.expireAt > Date.now()) {
         entry.data = data;
-      }
+        return true;
+      } 
     }
+    return false
   }
 
   /**
@@ -56,10 +57,23 @@ export class WechatMpCaptchaManager<T = {
    * @param captcha
    */
   data(captcha: string) {
+    console.log("获取验证码数据",{captcha,cache:JSON.stringify(this.cache)})
     const entry = this.cache.get(captcha);
     if (entry && entry.expireAt > Date.now()) {
       return entry.data;
     }
+  }
+  /**
+   * 校验验证码
+   * @param captcha 
+   * @returns 
+   */
+  async validCode(captcha: string):Promise<T|undefined> {
+    const entry = this.cache.get(captcha);
+    if (entry && entry.expireAt > Date.now()) {
+      return entry.data;
+    }
+    throw new Error("验证码不存在");
   }
 
   /**
@@ -76,9 +90,3 @@ export class WechatMpCaptchaManager<T = {
 }
 
 
-
-const globalForPrisma = globalThis as unknown as {wechatMpCaptchaManager:WechatMpCaptchaManager}
- 
-export const wechatMpCaptchaManager = globalForPrisma.wechatMpCaptchaManager || new WechatMpCaptchaManager()
- 
-if (process.env.NODE_ENV !== "production") globalForPrisma.wechatMpCaptchaManager = wechatMpCaptchaManager
