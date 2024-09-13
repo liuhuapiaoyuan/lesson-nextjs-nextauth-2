@@ -7,6 +7,7 @@ import { userService } from "./app/service/user.service";
 import { AdavanceNextAuth } from "./lib/auth/core";
 import Authing from "./lib/auth/provider/Authing";
 import Gitee from "./lib/auth/provider/Gitee";
+import QQ from "./lib/auth/provider/QQ";
 import WechatMp from "./lib/auth/provider/WechatMp";
 import { WechatMpApi } from "./lib/auth/provider/WechatMp/WechatMpApi";
 import { DBAdapterUser, IUserService } from "./lib/auth/type";
@@ -97,7 +98,7 @@ export const {
   oauthProviders,
 } = AdavanceNextAuth({
   ...AuthConfig,
-  providers: [GitHub, Gitee, Authing,  wechatMpProvider],
+  providers: [GitHub, Gitee, Authing,QQ,  wechatMpProvider],
   /* 自定义绑定授权页面 */
   bindPage: "/auth/bind",
   adapter: authAdapter,

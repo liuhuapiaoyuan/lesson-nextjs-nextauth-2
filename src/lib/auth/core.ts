@@ -1,27 +1,26 @@
 // 账号注册
 
-import { auth } from "@/auth";
 import NextAuth, {
   Account,
   CredentialsSignin,
-  NextAuthConfig,
 } from "next-auth";
 import { Adapter, AdapterUser } from "next-auth/adapters";
 import { OAuthProviderButtonStyles, Provider } from "next-auth/providers";
 import credentials from "next-auth/providers/credentials";
 import { cookies } from "next/headers";
-import { CallbackJwtFunction, CallbackSessionInFunction, CallbackSignInFunction, IUserService } from "./type";
+import { BindoAuthAccountInfo, CallbackJwtFunction, CallbackSessionInFunction, CallbackSignInFunction, IUserService, NextAuthConfig, NextAuthResultType } from "./type";
 
 function cleanBindAccountInfo() {
   const cookie = cookies();
   cookie.delete("nextauth.bind.account");
   cookie.delete("nextauth.bind.user");
 }
+ 
 /**
  * 从cookie获得绑定账号信息
  * @returns
  */
-export async function loadBindAccountInfo() {
+export async function loadBindAccountInfo() :Promise<BindoAuthAccountInfo>{
   const cookie = cookies();
   try {
     const account = JSON.parse(
@@ -30,12 +29,13 @@ export async function loadBindAccountInfo() {
     const user = JSON.parse(
       cookie.get("nextauth.bind.user")?.value ?? "null"
     ) as AdapterUser | null;
-    const bindAccount = account && user;
+    const bindAccount = !!(account && user);
     return { user, bindAccount, account };
   } catch (error) {
     return { user: null, bindAccount: false, account: null };
   }
 }
+
 
 
 
@@ -137,13 +137,12 @@ export class CredentialsOauth {
    * @param config
    * @returns
    */
-  public nextAuth(config: NextAuthConfig) {
+  public nextAuth(config: NextAuthConfig) :NextAuthResultType{
     const nextAuthInstance = NextAuth({
       ...config,
       providers: (config.providers ?? []).concat(this.getCredentialsProvider()),
       callbacks: {
         signIn: async (params) => {
-          console.log("登录成功" , params)
             const reuslt = await this.signInCallback(params)
             if (reuslt === true && typeof config.callbacks?.signIn==='function') {
                 return config.callbacks?.signIn(params)
@@ -209,7 +208,7 @@ export class CredentialsOauth {
      * @returns 
      */
     const listAccount = async()=>{
-      const session = await auth()
+      const session = await nextAuthInstance.auth()
       const userId = session?.user?.id
       if (userId) {
         return this.userService.listAccount(userId)

@@ -25,7 +25,7 @@ export default async function Page() {
 }  
   `}
       </style>
-      <div className="flex flex-col gap-2 p-5 w-[600px]  rounded-lg  border shadow-md">
+      <div className="flex flex-col gap-2 p-5 w-full bg-white md:w-[456px]  rounded-lg   shadow-md">
         <div className="text-center mb-5 text-lg font-bold">
           继续以完成第三方账号绑定
         </div>
@@ -41,7 +41,7 @@ export default async function Page() {
           <div>{`<=>`}</div>
           <Image
             className="dark:invert rounded-full shadow"
-            src={user?.image ?? "/avatar.png"}
+            src={provider?.style.logo ?? "/avatar.png"}
             alt={user?.name!}
             width={50}
             height={50}
@@ -49,7 +49,8 @@ export default async function Page() {
           />
         </div>
         <div className="text-center">
-          <p>你已通过 {provider?.name} 授权，完善以下登录信息即可完成绑定</p>
+          <p>你已通过 {provider?.name} 授权</p>
+          <p>完善以下登录信息即可完成绑定</p>
         </div>
         <div className="flex items-center justify-center flex-col gap-2 my-2">
           <Image

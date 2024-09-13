@@ -13,7 +13,7 @@ export default async function SignupPage({
   searchParams: Record<string, string>;
 }) {
   return (
-    <div className="flex items-center justify-center h-screen w-full">
+    <div className="flex items-center justify-center h-screen w-full p-5 md:p-0">
       <div className="flex flex-col gap-2 p-5 w-full bg-white md:w-[456px]  rounded-lg   shadow-md">
         <div className="flex items-center justify-center ">
           <Image

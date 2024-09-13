@@ -1,23 +1,45 @@
-import { NextAuthConfig } from "next-auth";
+ 
+
+
+
+
+import type { Account, NextAuthConfig, NextAuthResult } from "next-auth";
 import { AdapterUser } from "next-auth/adapters";
+import { OAuthProviderButtonStyles } from "next-auth/providers";
 
-type CallbacksType = NonNullable<NextAuthConfig['callbacks']>
-
-
+type CallbacksType = NonNullable<NextAuthConfig["callbacks"]>;
 export type CallbackSignInFunction = NonNullable<CallbacksType['signIn']>
 export type CallbackSessionInFunction = NonNullable<CallbacksType["session"]>
 export type CallbackJwtFunction = NonNullable<CallbacksType["jwt"]>
 
- 
-/* declare module "next-auth" {
-  // Returned by `useSession`, `getSession` and received as a prop on the `SessionProvider` React Context
-  interface Session {
-    user: {
-      userId:string
-    } & DefaultSession["user"]
-  }
-}
- */
+export { NextAuthConfig };
+
+export type BindoAuthAccountInfo = {
+  user: AdapterUser | null;
+  bindAccount: boolean;
+  account: Account | null;
+};
+
+export type NextAuthResultType = NextAuthResult & {
+  
+  oauthProviders: Array<{
+    id: string;
+    name: string;
+    style:OAuthProviderButtonStyles
+  }>;
+  listAccount: () => Promise<
+    Array<{
+      type: string;
+      id: string;
+      provider: string;
+      providerAccountId: string;
+    }>
+  >;
+  regist: (formData: FormData) => Promise<any>;
+  // user: null, bindAccount: false, account: null
+  unBindOauthAccountInfo: () => Promise<BindoAuthAccountInfo>;
+
+};
 
 export interface DBAdapterUser extends Omit<AdapterUser, "email"> {
   /**
@@ -49,7 +71,7 @@ export interface IUserService {
   ): Promise<DBAdapterUser>;
   /**
    * 注册账号
-   * @param user 
+   * @param user
    */
   registUser(user: {
     username: string;
@@ -66,10 +88,14 @@ export interface IUserService {
 
   /**
    * 绑定的第三方授权信息
-   * @param userId 
+   * @param userId
    */
-  listAccount(userId:string):Promise<Array<{
-    type:string,
-    id:string,
-    provider:string,providerAccountId:string}>>
+  listAccount(userId: string): Promise<
+    Array<{
+      type: string;
+      id: string;
+      provider: string;
+      providerAccountId: string;
+    }>
+  >;
 }
